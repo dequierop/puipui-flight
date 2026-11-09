@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="900" viewBox="0 0 2400 900">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#f7b9d4"/><stop offset=".58" stop-color="#ffdfdc"/><stop offset="1" stop-color="#f9aebd"/></linearGradient>
+ <linearGradient id="hills" x2="0" y2="1"><stop stop-color="#f4a2bb"/><stop offset="1" stop-color="#d978a7"/></linearGradient>
+ <pattern id="cells" width="400" height="250" patternUnits="userSpaceOnUse"><g fill="#ffe8e7" stroke="#de8ba9" stroke-width="8"><circle cx="80" cy="82" r="48"/><circle cx="180" cy="64" r="37"/><circle cx="285" cy="92" r="52"/><circle cx="140" cy="182" r="44"/><circle cx="265" cy="195" r="42"/></g><g fill="#f7b8cb" opacity=".75"><circle cx="80" cy="82" r="22"/><circle cx="285" cy="92" r="25"/><circle cx="140" cy="182" r="21"/></g></pattern>
+ <pattern id="vessels" width="400" height="160" patternUnits="userSpaceOnUse"><path d="M0 120 C80 20 130 190 210 80 S330 20 400 100" fill="none" stroke="#d85d83" stroke-width="12" opacity=".75"/><path d="M0 135 C80 35 130 205 210 95 S330 35 400 115" fill="none" stroke="#f5a5ba" stroke-width="5" opacity=".9"/></pattern>
+</defs>
+<rect width="2400" height="900" fill="url(#sky)"/><rect width="2400" height="620" fill="url(#cells)" opacity=".82"/><path d="M0 620 Q300 520 600 620 T1200 620 T1800 620 T2400 620 V900 H0Z" fill="url(#hills)"/><rect y="680" width="2400" height="220" fill="url(#vessels)" opacity=".8"/><path d="M0 740 Q300 655 600 740 T1200 740 T1800 740 T2400 740" fill="none" stroke="#bd527d" stroke-width="16" opacity=".45"/>
+</svg>
