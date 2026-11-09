@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>ปุยปุยบินฝ่าหอคอย: เกมระบบทางเดินหายใจ</title>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&family=Mitr:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#e4f1ec;--card:#fffaf0;--ink:#14213d;--mut:#5b6677;--gold:#ffc93c;--green:#2a9d8f;--line:#14213d;--ok:#d6f2e3;--bad:#fadadd;--s1:#6fbdf0;--s2:#dff3ff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Mali","Mitr","Sarabun",sans-serif;line-height:1.5}
+main{max-width:560px;margin:0 auto;padding:14px}
+h1{font-family:"Press Start 2P","Mitr",monospace;font-size:16px;line-height:1.7;margin:8px 0}
+.box{background:var(--card);border:3px solid var(--line);border-radius:6px;box-shadow:4px 4px 0 var(--line);padding:14px;margin:12px 0}
+button{font:inherit;color:#14213d;background:var(--gold);border:3px solid var(--line);border-radius:6px;box-shadow:3px 3px 0 var(--line);padding:10px 14px;cursor:pointer;width:100%;margin:6px 0;font-size:16px}
+button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--line)}
+button:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.opt{background:var(--card);color:var(--ink);text-align:left}
+.opt.ok{background:var(--ok)}.opt.bad{background:var(--bad)}
+.mut{color:var(--mut);font-size:14px}
+.tag{display:inline-block;background:var(--green);color:#fff;border-radius:4px;padding:0 8px;font-size:13px}
+.ex{border-left:6px solid var(--green);padding:6px 10px;margin:10px 0}
+.bar{display:flex;justify-content:space-between;gap:8px;font-size:14px;flex-wrap:wrap;align-items:center}
+.meter{flex:1;min-width:120px;height:16px;background:var(--card);border:3px solid var(--line);border-radius:4px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:#4cc9f0}
+.scene{position:relative;height:320px;overflow:hidden;border:3px solid var(--line);border-radius:6px;background:linear-gradient(var(--s1),var(--s2))}
+.tower{position:absolute;left:50%;margin-left:-30px;width:60px;top:34px;bottom:0;background:repeating-linear-gradient(#b98a62 0 18px,#8f6a49 18px 20px);border:3px solid #14213d;border-bottom:0}
+.flag{position:absolute;left:50%;margin-left:-12px;top:6px;font-size:26px}
+.lbl{position:absolute;right:6px;font-size:11px;color:#14213d;background:#ffffffb0;border-radius:4px;padding:0 6px}
+.cloud{position:absolute;left:calc(50% - 112px);font-size:36px;line-height:1}
+#bird{position:absolute;left:calc(50% - 104px);bottom:30px;width:44px;height:38px;transition:bottom linear}
+.hidden{display:none}
+/* New storybook mission presentation */
+body{font-family:"Mali","Mitr",sans-serif;background:radial-gradient(ellipse at top,#fff5d8,var(--bg) 65%)}
+main{max-width:720px;padding:18px}
+#intro h1{font-family:"Mali","Mitr",sans-serif;font-size:clamp(28px,7vw,48px);line-height:1.16;text-align:center;color:#733e30;text-shadow:2px 3px 0 #f8d78d;margin:4px 0 2px}
+.hero{height:300px;border:3px solid var(--line);border-radius:18px;background:url('arcade_background_long.png') center/cover;position:relative;overflow:hidden;box-shadow:5px 6px 0 var(--line);margin:12px 0}
+.hero:after{content:"";position:absolute;left:26%;top:44%;width:76px;height:68px;background-image:url("bird_flight_sprite.png");background-size:400% 100%;background-repeat:no-repeat;animation:heroBirdFlap .52s steps(4) infinite;filter:drop-shadow(1px 2px 1px #654)}
+@keyframes heroBirdFlap{to{background-position:100% 0}}
+.story-card{background:var(--card);border:3px solid var(--line);border-radius:16px;box-shadow:4px 5px 0 var(--line);padding:16px;margin:12px 0}
+#start{font-size:20px;font-weight:700;border-radius:14px;padding:14px;background:linear-gradient(120deg,#ffd166,#ffb84d)}
+#soundBtn{width:auto;margin:4px auto 12px;display:block;background:#d8f3e8;border-radius:999px;font-size:14px}
+.stage-list{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:12px 0}
+.stage-pill{background:#fff1c7;border:2px solid #845d3c;border-radius:10px;padding:7px 3px;text-align:center;font-size:12px;line-height:1.25}
+.credit{text-align:center;color:var(--mut);font-size:13px;padding:8px}
+#game .scene{height:420px;border-radius:16px;background-image:url('arcade_background_long.png');background-size:auto 100%;background-repeat:repeat-x;background-position:0 0;image-rendering:pixelated;touch-action:manipulation}
+#game .tower,#game .flag{display:none}
+#bird{width:76px;height:68px;left:calc(50% - 112px);background-image:url('bird_flight_sprite.png');background-size:400% 100%;background-repeat:no-repeat;animation:flap .52s steps(4) infinite;overflow:hidden}
+@keyframes flap{to{background-position:100% 0}}
+#qbox{border-radius:16px}
+#hintBtn{background:#d9efff;text-align:center;font-size:14px;width:auto}
+#hintBox{background:#fff4d6;border-radius:9px;padding:8px;margin:5px 0;color:#654822}
+@media(max-width:480px){.hero{height:235px}.stage-list{grid-template-columns:repeat(2,1fr)}#game .scene{height:360px}}#game .scene{background-size:cover,auto 200%;background-position:center,center 100%;transition:background-size 1.8s ease,background-position 1.8s ease}
+#bird{z-index:5;transition:left .2s ease,bottom .2s ease}
+.control-help{position:absolute;left:8px;top:8px;z-index:7;background:#fffdf0d9;border:2px solid #594b37;border-radius:9px;padding:5px 9px;color:#263342;font-size:12px}
+#flightControls{position:absolute;right:10px;bottom:10px;z-index:8;display:grid;grid-template-columns:repeat(3,42px);grid-template-rows:repeat(2,42px);gap:4px;touch-action:none}
+#flightControls button{width:42px;height:42px;margin:0;padding:0;border:2px solid #594b37;border-radius:11px;background:#fff5d9e8;box-shadow:2px 2px 0 #594b37;font-size:17px;touch-action:none;user-select:none}
+#flightControls button[data-move="up"]{grid-column:2;grid-row:1}#flightControls button[data-move="left"]{grid-column:1;grid-row:2}#flightControls button[data-move="down"]{grid-column:2;grid-row:2}#flightControls button[data-move="right"]{grid-column:3;grid-row:2}
+.obstacle{position:absolute;top:0;width:58px;height:100%;z-index:3}#game .scene{border:3px solid #24324c;box-shadow:inset 0 -38px 0 #00000008}
+.gameHud{position:absolute;z-index:7;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;pointer-events:none}
+.gameHud span{background:#fff8d9e8;border:2px solid #46566b;border-radius:9px;padding:4px 9px;font-weight:700;color:#20324a}
+.pipe{position:absolute;width:58px;background:linear-gradient(90deg,#459c49 0 16%,#6ecc57 17% 72%,#499d42 73%);border:3px solid #356c3b;box-shadow:inset -5px 0 #367c3e;z-index:3}
+.pipe.top{top:0}.pipe.bottom{bottom:34px}
+.pipe-cap{position:absolute;left:-8px;width:66px;height:22px;background:linear-gradient(90deg,#4da650,#8ade5e 55%,#4da650);border:3px solid #356c3b;box-shadow:inset -5px 0 #3e8740}
+.pipe.top .pipe-cap{bottom:0}.pipe.bottom .pipe-cap{top:0}
+.ground{position:absolute;z-index:5;bottom:0;left:0;width:100%;height:34px;background:repeating-linear-gradient(90deg,#9c633a 0 14px,#aa7042 14px 28px);border-top:8px solid #76c94b;box-shadow:0 -3px #417b38}
+#game #bird{left:22%;top:45%;bottom:auto;width:48px;height:42px;z-index:6;image-rendering:pixelated}
+.tap-hint{position:absolute;z-index:7;left:50%;top:18%;transform:translateX(-50%);background:#fff8d9dd;padding:6px 12px;border-radius:10px;font-weight:700;pointer-events:none;text-align:center}
+#game .bar{display:none}
+#game #qbox{margin-top:10px}
+@media(max-width:480px){#game .scene{height:390px}}
+
+:root{--arcade:#83d5ef;--panel:#fff1b8;--edge:#28364c;--green:#5ac85d}
+body{background:#647bd3;font-family:"Mali","Mitr",sans-serif}
+main{max-width:500px;padding:10px 12px 96px}
+.hidden{display:none!important}
+.topline{display:flex;align-items:center;justify-content:space-between;margin:4px 0 9px}
+.brand{font-family:"Press Start 2P",monospace;font-size:13px;color:#fff;text-shadow:2px 3px #27334d,3px 4px #222}
+.sound-btn,.mini-button{width:auto;margin:0;padding:6px 10px;background:#ffcf3e;border:3px solid #29364c;border-radius:9px;box-shadow:2px 3px #29364c;font-weight:700}
+.home-scene{height:220px;position:relative;overflow:hidden;border:4px solid var(--edge);border-radius:12px;background:url("arcade_background_long.png") center/cover;image-rendering:pixelated}
+.home-hill{position:absolute;bottom:30px;left:-10%;width:120%;height:85px;background:linear-gradient(160deg,transparent 0 22%,#68bd5c 23% 55%,#4ca952 56%)}
+.home-ground{position:absolute;bottom:0;left:0;right:0;height:34px;background:repeating-linear-gradient(90deg,#a46c3d 0 12px,#ba7b46 12px 24px);border-top:8px solid #81d653}
+.home-bird{position:absolute;z-index:2;left:35%;top:42%;width:70px;height:60px;background:url("bird_flight_sprite.png") 0 0/400% 100% no-repeat;image-rendering:pixelated;animation:none;background-position:33.333% 0}
+.pixel-cloud{position:absolute;width:74px;height:24px;background:#fff;border-radius:20px;top:30px;opacity:.9;box-shadow:12px -9px #fff,-10px 4px #fff}
+.cloud-a{left:10%}.cloud-b{right:12%;top:66px;transform:scale(.7)}
+.home-sign{position:absolute;top:8px;left:50%;transform:translateX(-50%);font:9px "Press Start 2P",monospace;color:white;text-shadow:2px 2px #344}
+.panel{background:#fff0b0;border:4px solid #29364c;border-radius:12px;box-shadow:4px 5px #29364c;padding:14px;margin:10px 0}
+.panel h1{font:18px "Press Start 2P","Mali",sans-serif;line-height:1.7;text-align:center;color:#853f28;text-shadow:1px 2px #fff;margin:7px 0}
+.panel p{text-align:center;margin:8px 0}.panel label{display:block;font-weight:700;margin:10px 0 4px}
+.panel input,.panel select{width:100%;padding:10px;border:3px solid #736445;border-radius:8px;background:#fff;color:#24324c;font:inherit}
+.big-button{background:#24c0d5;color:white;border:3px solid #17364a;border-radius:10px;box-shadow:3px 4px #17364a;font:bold 18px "Press Start 2P","Mali",sans-serif;padding:13px 10px;margin:12px 0;width:100%;text-shadow:1px 2px #14515d}
+.small-note{font-size:12px;color:#5b6677}.credit{text-align:center;font-size:12px;color:#5b6677;margin-top:10px}
+.bottom-nav{position:fixed;z-index:30;bottom:0;left:50%;transform:translateX(-50%);width:min(500px,100vw);height:75px;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;padding:5px 5px max(5px,env(safe-area-inset-bottom));background:#7566d7;border-top:4px solid #26374f}
+.bottom-nav button{margin:0;padding:2px;border:3px solid #26374f;border-radius:9px;background:#ffca35;box-shadow:2px 3px #26374f;color:#14213d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-family:"Press Start 2P",monospace;font-size:8px}
+.bottom-nav button span{font:24px "Mali",sans-serif;line-height:1}.bottom-nav .nav-home{background:#4fd04b;transform:translateY(-8px);height:78px}.bottom-nav button.active{outline:3px solid #fff1a4}
+.game-top{display:flex;justify-content:space-between;align-items:center;gap:4px;margin-bottom:6px;color:white;font:bold 10px "Press Start 2P",monospace;text-shadow:1px 2px #24324c}
+.game-top span{background:#3b4e69;padding:7px 6px;border:2px solid #1f3047;border-radius:7px;white-space:nowrap}.game-top .mini-button{font-size:9px;text-shadow:none}
+.scene{position:relative;height:420px;overflow:hidden;border:4px solid #24324c;border-radius:8px;background:url("arcade_background_long.png") 0 0/auto 100% repeat-x;touch-action:manipulation;image-rendering:pixelated}
+.obstacle{position:absolute;top:0;width:62px;height:100%;z-index:3}
+.pipe{position:absolute;width:58px;background:linear-gradient(90deg,#389246 0 15%,#61ca55 16% 70%,#318641 71%);border:3px solid #225d39;box-shadow:inset -5px 0 #286e3d;z-index:3}
+.pipe.top{top:0}.pipe.bottom{bottom:34px}.pipe-cap{position:absolute;left:-8px;width:68px;height:22px;background:linear-gradient(90deg,#3c9d4b,#8ae35d 52%,#3b9847);border:3px solid #225d39;box-shadow:inset -5px 0 #286e3d}
+.pipe.top .pipe-cap{bottom:0}.pipe.bottom .pipe-cap{top:0}
+.gift{position:absolute;z-index:4;width:34px;height:34px;border:3px solid #775324;border-radius:4px;background:#ffca37;box-shadow:inset 0 0 0 3px #fff0a0;color:#cc3d5a;font-size:21px;line-height:28px;text-align:center}
+#game #bird{position:absolute;left:80px;top:180px;bottom:auto;width:48px;height:42px;z-index:6;background:url("bird_flight_sprite.png") 0 0/400% 100% no-repeat;image-rendering:pixelated;animation:none;background-position:33.333% 0;transition:transform .08s linear}
+@keyframes flap{to{background-position:100% 0}}
+.ground{position:absolute;z-index:5;bottom:0;left:0;width:100%;height:34px;background:repeating-linear-gradient(90deg,#a36a3b 0 14px,#b77943 14px 28px);border-top:8px solid #73cc4a;box-shadow:0 -3px #417b38}
+.tap-hint{position:absolute;z-index:7;left:50%;top:28%;transform:translateX(-50%);background:#fff5d9e8;padding:8px 11px;border:2px solid #40516a;border-radius:9px;font-weight:700;text-align:center;white-space:nowrap;pointer-events:none}
+.game-tip{text-align:center;background:#fff5d9e8;border:2px solid #304159;border-radius:8px;margin:7px 0;padding:5px;font-size:12px}
+#qbox{position:fixed;z-index:99;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,430px);max-height:80%;overflow:auto;background:#fff0b0;border:4px solid #27364e;box-shadow:5px 6px #27364e;border-radius:12px;margin:0;padding:12px}
+#qbox p{text-align:left}#qbox .opt{background:#ffdf73;color:#18243b;border-radius:8px;text-align:left;font-size:14px;padding:8px;margin:4px 0}#qbox .opt.ok{background:#83e08a}#qbox .opt.bad{background:#f58e96}
+.stage-cards,.shop-list{display:grid;gap:9px}.stage-card,.shop-card{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#f7d695;border:3px solid #6c4c35;border-radius:9px;padding:9px}
+.stage-card button,.shop-card button{width:auto;margin:0;padding:7px 10px;font-weight:700}.stage-card small,.shop-card small{display:block;color:#53606d}.coin-pill{background:#fff1b8;padding:6px 10px;border:2px solid #26374f;border-radius:8px}
+.profile-bird{font-size:50px;text-align:center}.player-card{font:14px "Press Start 2P",monospace;background:#f5d89c;border:2px solid #684c36;border-radius:8px;padding:12px}.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat{background:#f7d695;border:2px solid #745438;border-radius:8px;padding:10px;text-align:center}.stat b{display:block;font-size:20px;color:#276a49}
+@media(max-width:480px){main{padding-bottom:96px}.scene{height:400px}.panel h1{font-size:15px}.game-top{font-size:8px}.game-top span{padding:6px 3px}}
+:root{--arcade:#83d5ef;--panel:#fff1b8;--edge:#28364c;--green:#5ac85d}
+body{background:#647bd3;font-family:"Mali","Mitr",sans-serif}
+main{max-width:500px;padding:10px 12px 96px}
+.hidden{display:none!important}
+.topline{display:flex;align-items:center;justify-content:space-between;margin:4px 0 9px}
+.brand{font-family:"Press Start 2P",monospace;font-size:13px;color:#fff;text-shadow:2px 3px #27334d,3px 4px #222}
+.sound-btn,.mini-button{width:auto;margin:0;padding:6px 10px;background:#ffcf3e;border:3px solid #29364c;border-radius:9px;box-shadow:2px 3px #29364c;font-weight:700}
+.home-scene{height:220px;position:relative;overflow:hidden;border:4px solid var(--edge);border-radius:12px;background:url("arcade_background_long.png") center/cover;image-rendering:pixelated}
+.home-hill{position:absolute;bottom:30px;left:-10%;width:120%;height:85px;background:linear-gradient(160deg,transparent 0 22%,#68bd5c 23% 55%,#4ca952 56%)}
+.home-ground{position:absolute;bottom:0;left:0;right:0;height:34px;background:repeating-linear-gradient(90deg,#a46c3d 0 12px,#ba7b46 12px 24px);border-top:8px solid #81d653}
+.home-bird{position:absolute;z-index:2;left:35%;top:42%;width:70px;height:60px;background:url("bird_flight_sprite.png") 0 0/400% 100% no-repeat;image-rendering:pixelated;animation:none;background-position:33.333% 0}
+.pixel-cloud{position:absolute;width:74px;height:24px;background:#fff;border-radius:20px;top:30px;opacity:.9;box-shadow:12px -9px #fff,-10px 4px #fff}
+.cloud-a{left:10%}.cloud-b{right:12%;top:66px;transform:scale(.7)}
+.home-sign{position:absolute;top:8px;left:50%;transform:translateX(-50%);font:9px "Press Start 2P",monospace;color:white;text-shadow:2px 2px #344}
+.panel{background:#fff0b0;border:4px solid #29364c;border-radius:12px;box-shadow:4px 5px #29364c;padding:14px;margin:10px 0}
+.panel h1{font:18px "Press Start 2P","Mali",sans-serif;line-height:1.7;text-align:center;color:#853f28;text-shadow:1px 2px #fff;margin:7px 0}
+.panel p{text-align:center;margin:8px 0}.panel label{display:block;font-weight:700;margin:10px 0 4px}
+.panel input,.panel select{width:100%;padding:10px;border:3px solid #736445;border-radius:8px;background:#fff;color:#24324c;font:inherit}
+.big-button{background:#24c0d5;color:white;border:3px solid #17364a;border-radius:10px;box-shadow:3px 4px #17364a;font:bold 18px "Press Start 2P","Mali",sans-serif;padding:13px 10px;margin:12px 0;width:100%;text-shadow:1px 2px #14515d}
+.small-note{font-size:12px;color:#5b6677}.credit{text-align:center;font-size:12px;color:#5b6677;margin-top:10px}
+.bottom-nav{position:fixed;z-index:30;bottom:0;left:50%;transform:translateX(-50%);width:min(500px,100vw);height:75px;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;padding:5px 5px max(5px,env(safe-area-inset-bottom));background:#7566d7;border-top:4px solid #26374f}
+.bottom-nav button{margin:0;padding:2px;border:3px solid #26374f;border-radius:9px;background:#ffca35;box-shadow:2px 3px #26374f;color:#14213d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-family:"Press Start 2P",monospace;font-size:8px}
+.bottom-nav button span{font:24px "Mali",sans-serif;line-height:1}.bottom-nav .nav-home{background:#4fd04b;transform:translateY(-8px);height:78px}.bottom-nav button.active{outline:3px solid #fff1a4}
+.game-top{display:flex;justify-content:space-between;align-items:center;gap:4px;margin-bottom:6px;color:white;font:bold 10px "Press Start 2P",monospace;text-shadow:1px 2px #24324c}
+.game-top span{background:#3b4e69;padding:7px 6px;border:2px solid #1f3047;border-radius:7px;white-space:nowrap}.game-top .mini-button{font-size:9px;text-shadow:none}
+.scene{position:relative;height:420px;overflow:hidden;border:4px solid #24324c;border-radius:8px;background:url("arcade_background_long.png") 0 0/auto 100% repeat-x;touch-action:manipulation;image-rendering:pixelated}
+.obstacle{position:absolute;top:0;width:62px;height:100%;z-index:3}
+.pipe{position:absolute;width:58px;background:linear-gradient(90deg,#389246 0 15%,#61ca55 16% 70%,#318641 71%);border:3px solid #225d39;box-shadow:inset -5px 0 #286e3d;z-index:3}
+.pipe.top{top:0}.pipe.bottom{bottom:34px}.pipe-cap{position:absolute;left:-8px;width:68px;height:22px;background:linear-gradient(90deg,#3c9d4b,#8ae35d 52%,#3b9847);border:3px solid #225d39;box-shadow:inset -5px 0 #286e3d}
+.pipe.top .pipe-cap{bottom:0}.pipe.bottom .pipe-cap{top:0}
+.gift{position:absolute;z-index:4;width:34px;height:34px;border:3px solid #775324;border-radius:4px;background:#ffca37;box-shadow:inset 0 0 0 3px #fff0a0;color:#cc3d5a;font-size:21px;line-height:28px;text-align:center}
+#game #bird{position:absolute;left:80px;top:180px;bottom:auto;width:48px;height:42px;z-index:6;background:url("bird_flight_sprite.png") 0 0/400% 100% no-repeat;image-rendering:pixelated;animation:none;background-position:33.333% 0;transition:transform .08s linear}
+@keyframes flap{to{background-position:100% 0}}
+.ground{position:absolute;z-index:5;bottom:0;left:0;width:100%;height:34px;background:repeating-linear-gradient(90deg,#a36a3b 0 14px,#b77943 14px 28px);border-top:8px solid #73cc4a;box-shadow:0 -3px #417b38}
+.tap-hint{position:absolute;z-index:7;left:50%;top:28%;transform:translateX(-50%);background:#fff5d9e8;padding:8px 11px;border:2px solid #40516a;border-radius:9px;font-weight:700;text-align:center;white-space:nowrap;pointer-events:none}
+.game-tip{text-align:center;background:#fff5d9e8;border:2px solid #304159;border-radius:8px;margin:7px 0;padding:5px;font-size:12px}
+#qbox{position:fixed;z-index:99;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,430px);max-height:80%;overflow:auto;background:#fff0b0;border:4px solid #27364e;box-shadow:5px 6px #27364e;border-radius:12px;margin:0;padding:12px}
+#qbox p{text-align:left}#qbox .opt{background:#ffdf73;color:#18243b;border-radius:8px;text-align:left;font-size:14px;padding:8px;margin:4px 0}#qbox .opt.ok{background:#83e08a}#qbox .opt.bad{background:#f58e96}
+.stage-cards,.shop-list{display:grid;gap:9px}.stage-card,.shop-card{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#f7d695;border:3px solid #6c4c35;border-radius:9px;padding:9px}
+.stage-card button,.shop-card button{width:auto;margin:0;padding:7px 10px;font-weight:700}.stage-card small,.shop-card small{display:block;color:#53606d}.coin-pill{background:#fff1b8;padding:6px 10px;border:2px solid #26374f;border-radius:8px}
+.profile-bird{font-size:50px;text-align:center}.player-card{font:14px "Press Start 2P",monospace;background:#f5d89c;border:2px solid #684c36;border-radius:8px;padding:12px}.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat{background:#f7d695;border:2px solid #745438;border-radius:8px;padding:10px;text-align:center}.stat b{display:block;font-size:20px;color:#276a49}
+@media(max-width:480px){main{padding-bottom:96px}.scene{height:400px}.panel h1{font-size:15px}.game-top{font-size:8px}.game-top span{padding:6px 3px}}#game .scene{background-image:url("arcade_background_long.png");background-size:auto 100%;background-repeat:repeat-x;background-position:0 0;transition:none}
+@media(max-width:480px){#game .scene{height:400px}}
+
+body,button,input,select,.brand,.game-top,.panel h1,.big-button,.bottom-nav button,.home-sign,.player-card{font-family:"Mali","Mitr",sans-serif!important}
+.panel h1{line-height:1.45}.brand{letter-spacing:0}
+.pipe.stone{background:repeating-linear-gradient(180deg,#8b9aa8 0 24px,#697887 24px 29px);border-color:#394956}
+.pipe.stone .pipe-cap{background:linear-gradient(90deg,#8794a1,#bbc4cb 52%,#758491);border-color:#394956}
+.pipe.wood{background:repeating-linear-gradient(180deg,#a56a36 0 18px,#704522 18px 23px);border-color:#51351e}
+.pipe.wood .pipe-cap{background:linear-gradient(90deg,#995c2d,#d49a53 52%,#8c5429);border-color:#51351e}
+.pipe.crystal{background:repeating-linear-gradient(180deg,#4a9bb1 0 22px,#307182 22px 27px);border-color:#204b64}
+.pipe.crystal .pipe-cap{background:linear-gradient(90deg,#3e8da8,#9be7df 52%,#347b96);border-color:#204b64}
+.gift{width:42px;height:42px;font-size:27px;line-height:35px;animation:giftPulse .65s steps(2) infinite;outline:2px solid #fff6bd;filter:drop-shadow(0 0 5px #fff5a0)}
+@keyframes giftPulse{50%{transform:scale(1.08)}}
+body,button,input,select,.brand,.game-top,.panel h1,.big-button,.bottom-nav button,.home-sign,.player-card{font-family:"Mali","Mitr",sans-serif!important}.pipe.stone{background:repeating-linear-gradient(180deg,#559b41 0 24px,#3e8038 24px 29px);border-color:#2b5e32}.pipe.stone .pipe-cap{background:linear-gradient(90deg,#478b37,#c2e86d 48%,#478b37);border-color:#2b5e32}
+.pipe.wood{background:repeating-linear-gradient(90deg,#367c39 0 8px,#86c64a 8px 18px,#4a9a3b 18px 26px);border-color:#285634}.pipe.wood .pipe-cap{background:linear-gradient(90deg,#3b843a,#b0de61 50%,#3a8438);border-color:#285634}
+.pipe.crystal{background:linear-gradient(90deg,#2e7d41 0 12%,#85da61 20% 38%,#57ae4b 55% 72%,#327940 100%);border-color:#224c2f}.pipe.crystal .pipe-cap{background:linear-gradient(90deg,#2f7e41,#a8e866 48%,#347e40);border-color:#224c2f}.brand{font-size:20px;text-shadow:2px 2px #27334d}
+.home-sign{font:16px "Mali","Mitr",sans-serif!important;letter-spacing:.5px;background:#24405dbb;border:2px solid #fff;border-radius:8px;padding:6px 10px;text-shadow:1px 2px #24324c;top:10px}
+.panel h1{font-size:24px!important;line-height:1.4!important}
+.byline{display:block;font-family:"Mali","Mitr",sans-serif;font-size:18px;line-height:1.2;color:#39745b;margin-top:4px}
+.panel p,.panel label,.panel input,.panel select{font-size:18px}
+.small-note,.credit{font-size:15px}
+@media(max-width:480px){.brand{font-size:16px}.home-sign{font-size:13px!important}.panel h1{font-size:21px!important}.byline{font-size:16px}}</style>
+</head>
+<body>
+<main>
+<section id="home">
+<div class="topline"><span class="brand">PUIPUI FLIGHT</span><button id="soundBtn" class="sound-btn" type="button">🔊</button></div>
+<div class="home-scene"><div class="pixel-cloud cloud-a"></div><div class="pixel-cloud cloud-b"></div><div class="home-bird"></div><div class="home-hill"></div><div class="home-ground"></div><div class="home-sign">🌬️ RESPIRATORY QUEST</div></div>
+<div class="panel"><h1>ปุยปุยบินฝ่าหอคอย <span class="byline">by KRUPOY</span></h1><p>บินหลบท่อ เก็บกล่องของขวัญ แล้วตอบคำถามชีววิทยา!</p><label for="playerName">ชื่อนักบิน</label><input id="playerName" maxlength="18" placeholder="พิมพ์ชื่อของคุณ"><label for="homeStage">เลือกชุดคำถาม</label><select id="homeStage"></select><button id="playButton" class="big-button">▶ PLAY</button><p class="small-note">แตะ / กด Space เพื่อกระพือปีก • หลบท่อ • เก็บ 🎁</p><div class="credit">พัฒนาโดยครูภัทรกันย์ กิติยศ</div></div>
+</section><section id="game" class="hidden">
+<div class="game-top"><button id="gameHome" class="mini-button">⌂ HOME</button><span id="runStage">ด่าน 1</span><span id="distanceHud">0 m</span><span id="heartsHud">❤️❤️❤️</span><span id="scoreHud">ท่อ 0</span></div>
+<div class="scene" id="scene" aria-label="ฉากบินหลบท่อและเก็บกล่องของขวัญ"><div id="bird" role="img" aria-label="น้องปุยปุย"></div><div class="ground"></div><div class="tap-hint" id="tapHint">แตะหน้าจอ หรือกด Space เพื่อบิน</div></div>
+<div class="game-tip" id="gameTip">หลบท่อให้ดี: 🎁 จะอยู่กลางช่องท่อแรก แล้วมีทุก 2 ท่อ บินชนกล่องเพื่อเปิดคำถาม!</div><div class="box hidden" id="qbox"></div>
+</section>
+<section id="mapScreen" class="hidden"><div class="topline"><span class="brand">🗺️ แผนที่ด่าน</span></div><div class="panel"><h1>เลือกชุดคำถาม</h1><p>บินผ่านท่อและเก็บกล่องของขวัญในแต่ละด่าน</p><div id="stageCards" class="stage-cards"></div></div></section>
+<section id="shopScreen" class="hidden"><div class="topline"><span class="brand">🛍️ ร้านตัวช่วย</span><span class="coin-pill">🪙 <b id="walletShop">0</b></span></div><div class="panel"><h1>ซื้ออุปกรณ์ช่วยบิน</h1><p>สะสมเหรียญจากการตอบคำถามถูก</p><div class="shop-list" id="shopItems"></div></div></section>
+<section id="nestScreen" class="hidden"><div class="topline"><span class="brand">🪺 รังนักบิน</span></div><div class="panel"><h1>ชื่อและสถิติ</h1><div class="profile-bird">🐤</div><p class="player-card" id="profileName">นักบิน</p><div class="stats-grid" id="statsGrid"></div></div></section>
+<section id="shareScreen" class="hidden"><div class="topline"><span class="brand">📨 ส่งผลให้ครู</span></div><div class="panel"><h1>แชร์ผลการบิน</h1><p id="sharePreview">เริ่มเล่นเพื่อบันทึกผล แล้วส่งให้คุณครูได้เลย</p><button id="shareButton" class="big-button">📨 ส่งผลให้ครู</button><p id="shareStatus" class="small-note"></p></div></section>
+<section id="results" class="hidden"><div class="topline"><span class="brand">✈️ สรุปเที่ยวบิน</span></div><div class="panel" id="resultPanel"></div></section>
+<nav class="bottom-nav" id="bottomNav"><button data-screen="nestScreen"><span>🪺</span><b>NEST</b></button><button data-screen="shopScreen"><span>🛍️</span><b>SHOP</b></button><button data-screen="home" class="nav-home"><span>⌂</span><b>HOME</b></button><button data-screen="mapScreen"><span>🗺️</span><b>MAP</b></button><button data-screen="shareScreen"><span>🔗</span><b>SHARE</b></button></nav></main>
+<script>
+var T=["พื้นดิน: ทางเดินอากาศ","เมฆต่ำ: ถุงลม","เมฆกลาง: กลไกหายใจ","เมฆสูง: ขนส่งแก๊ส","ยอดหอคอย: นกและการควบคุม"];
+var TOP=["ทางเดินอากาศ","ถุงลมและการแลกเปลี่ยนแก๊ส","กลไกการหายใจ","การขนส่งแก๊ส","ระบบหายใจของสัตว์"];
+var R=[
+[0,"อากาศผ่านหลอดลม (trachea) แล้วเข้าสู่โครงสร้างใดถัดไป",["บรอนคัสซ้ายและขวา","ถุงลมโดยตรง","กล่องเสียง","คอหอย"],"หลอดลมแตกแขนงเป็นบรอนคัสซ้ายและขวา แล้วแตกเป็นบรอนคิโอลจนถึงถุงลม"],
+[0,"ฝาปิดกล่องเสียง (epiglottis) ทำหน้าที่อะไร",["ปิดกล่องเสียงขณะกลืนเพื่อกันอาหารเข้าหลอดลม","สร้างเสียงพูด","กรองฝุ่นละออง","ช่วยแลกเปลี่ยนแก๊ส"],"ขณะกลืน ฝาปิดกล่องเสียงจะปิดทางเข้าหลอดลม อาหารจึงลงหลอดอาหาร"],
+[0,"ขนเล็ก (cilia) และเมือกในหลอดลมช่วยเรื่องใด",["ดักจับและพัดฝุ่นกับเชื้อโรคออกจากทางเดินหายใจ","เพิ่มออกซิเจนในอากาศ","สร้างเสียง","ช่วยให้ถุงลมขยาย"],"เมือกดักสิ่งแปลกปลอม แล้วขนเล็กพัดไปที่คอหอยเพื่อไอหรือกลืนออก"],
+[0,"เสียงพูดของคนเกิดจากอะไร",["การสั่นของสายเสียงในกล่องเสียงเมื่ออากาศผ่าน","การสั่นของกะบังลม","อากาศกระทบถุงลม","การสั่นของหลอดลมแขนง"],"สายเสียง (vocal cords) อยู่ในกล่องเสียง เมื่ออากาศผ่านจะสั่นเกิดเสียง"],
+[1,"ผนังถุงลมบางเพียงชั้นเดียวและมีหลอดเลือดฝอยล้อมรอบ มีผลดีอย่างไร",["แก๊สแพร่ผ่านได้ง่ายและรวดเร็ว","ป้องกันฝุ่น","ทำให้ปอดแข็งแรง","ลดอุณหภูมิอากาศ"],"ผนังบางทำให้ระยะแพร่สั้น O2 และ CO2 แพร่ผ่านได้เร็ว"],
+[1,"การแลกเปลี่ยนแก๊สที่ถุงลมเกิดด้วยวิธีใด",["การแพร่ จากที่ความเข้มข้นสูงไปต่ำ","แอกทีฟทรานสปอร์ต","ออสโมซิส","เอนโดไซโทซิส"],"แก๊สแพร่ตามความแตกต่างของความดันย่อย โดยไม่ใช้พลังงาน"],
+[1,"ที่ถุงลม แก๊สเคลื่อนที่อย่างไร",["O2 จากถุงลมเข้าเลือด และ CO2 จากเลือดเข้าถุงลม","O2 จากเลือดเข้าถุงลม และ CO2 จากถุงลมเข้าเลือด","แก๊สทั้งสองเข้าเลือด","แก๊สทั้งสองเข้าถุงลม"],"O2 ในถุงลมมีความดันย่อยสูงกว่าในเลือดที่มาจากร่างกาย จึงแพร่เข้าเลือด ส่วน CO2 แพร่ออก"],
+[1,"เหตุใดปอดจึงมีถุงลมจำนวนมาก",["เพิ่มพื้นที่ผิวสำหรับแลกเปลี่ยนแก๊ส","เพื่อเก็บอากาศไว้ใช้ภายหลัง","ลดแรงดันเลือด","ช่วยกรองฝุ่น"],"ถุงลมจำนวนมากรวมกันมีพื้นที่ผิวมาก แลกเปลี่ยนแก๊สได้มากและรวดเร็ว"],
+[2,"ขณะหายใจเข้า กะบังลมและปริมาตรช่องอกเป็นอย่างไร",["กะบังลมหดตัวเลื่อนต่ำลง ปริมาตรช่องอกเพิ่ม","กะบังลมคลายตัวโค้งขึ้น ปริมาตรช่องอกเพิ่ม","กะบังลมหดตัว ปริมาตรช่องอกลด","กะบังลมคลายตัว ปริมาตรช่องอกลด"],"กะบังลมหดตัวแบนลง และซี่โครงยกขึ้น ช่องอกจึงกว้างขึ้น"],
+[2,"ขณะหายใจเข้า ความดันอากาศในปอดเทียบกับบรรยากาศเป็นอย่างไร",["ต่ำกว่า อากาศจึงไหลเข้า","สูงกว่า อากาศจึงไหลเข้า","เท่ากัน","ไม่เกี่ยวกัน"],"ปริมาตรช่องอกเพิ่มทำให้ความดันในปอดลดลง อากาศไหลจากที่ความดันสูงเข้าสู่ปอด"],
+[2,"การหายใจออกตามปกติ เกิดจากอะไร",["กะบังลมคลายตัว ซี่โครงลดลง ความดันในปอดเพิ่ม","กะบังลมหดตัวแรง","ความดันในปอดต่ำกว่าบรรยากาศ","ซี่โครงยกขึ้น"],"ปริมาตรช่องอกลดลงทำให้ความดันในปอดสูงกว่าภายนอก อากาศจึงถูกดันออก"],
+[2,"เยื่อหุ้มปอด (pleura) มีประโยชน์อย่างไร",["ลดแรงเสียดทานและทำให้ปอดขยายตามช่องอก","สร้างฮีโมโกลบิน","ผลิตเมือก","ควบคุมจังหวะหายใจ"],"ของเหลวระหว่างเยื่อสองชั้นช่วยให้ปอดเลื่อนไถลและขยายตามช่องอก"],
+[3,"ออกซิเจนส่วนใหญ่ในเลือดถูกขนส่งอย่างไร",["จับกับฮีโมโกลบินในเม็ดเลือดแดง","ละลายในพลาสมาทั้งหมด","จับกับเกล็ดเลือด","จับกับเม็ดเลือดขาว"],"ฮีโมโกลบินจับ O2 ได้ดี เลือดจึงพา O2 ได้มากกว่าการละลายในพลาสมามาก"],
+[3,"CO2 ส่วนใหญ่ถูกขนส่งในรูปใด",["ไบคาร์บอเนตไอออนในพลาสมา","จับกับฮีโมโกลบินทั้งหมด","แก๊ส CO2 ล้วน","กรดไนตริก"],"CO2 ส่วนใหญ่เปลี่ยนเป็นไบคาร์บอเนตไอออน (HCO3−) ลำเลียงไปที่ปอด"],
+[3,"ที่เนื้อเยื่อ ฮีโมโกลบินปล่อย O2 เพราะเหตุใด",["ความดันย่อยของ O2 ในเนื้อเยื่อต่ำกว่าในเลือด","เนื้อเยื่อมี O2 สูงกว่าเลือด","เลือดมี CO2 ต่ำ","อุณหภูมิเนื้อเยื่อต่ำ"],"เซลล์ใช้ O2 อยู่ตลอด ความดันย่อยจึงต่ำ O2 จึงแพร่ออกจากเลือดเข้าเนื้อเยื่อ"],
+[3,"ผู้ขาดธาตุเหล็กรุนแรงเหนื่อยง่าย เพราะเหตุใด",["สร้างฮีโมโกลบินได้น้อย ขนส่ง O2 ได้น้อย","ปอดไม่มีถุงลม","กะบังลมหดไม่ได้","CO2 ถูกขนส่งไม่ได้"],"ธาตุเหล็กเป็นองค์ประกอบของฮีโมโกลบิน หากขาดจะขนส่ง O2 ไปเซลล์ได้ลดลง"],
+[4,"ถุงลมของนกต่างจากถุงลมปอดของคนอย่างไร",["เป็นที่พักและปั๊มอากาศ ไม่แลกเปลี่ยนแก๊สเอง","เป็นที่แลกเปลี่ยนแก๊สหลัก","เก็บเลือด","สร้างเสียงเท่านั้น"],"นกแลกเปลี่ยนแก๊สที่ปอด ส่วนถุงลมนกช่วยเก็บและดันอากาศให้ไหลผ่านปอด"],
+[4,"เหตุใดนกจึงได้ O2 ต่อเนื่องทั้งหายใจเข้าและออก",["อากาศไหลทางเดียวผ่านปอด","ปอดนกขยายหดมากกว่าคน","นกมีกะบังลมหนา","นกใช้เหงือกช่วย"],"ถุงลมทำให้อากาศไหลทางเดียวผ่านปอด จึงมีอากาศสดผ่านปอดอยู่เสมอ เหมาะกับการบินสูง"],
+[4,"สัตว์เลื้อยคลานส่วนใหญ่ใช้โครงสร้างใดแลกเปลี่ยนแก๊ส",["ปอด","เหงือกตลอดชีวิต","ผิวหนังอย่างเดียว","ท่อลมแบบแมลง"],"สัตว์เลื้อยคลานส่วนใหญ่ใช้ปอดในการแลกเปลี่ยนแก๊ส"],
+[4,"แมลงขนส่งออกซิเจนต่างจากคนอย่างไร",["ท่อลมนำอากาศตรงถึงเซลล์ ไม่ใช้เลือดขนส่ง","ใช้เหงือกแลกเปลี่ยนแก๊ส","ใช้ฮีโมโกลบินเท่านั้น","ใช้ปอดแบบถุงลม"],"แมลงมีรูหายใจ (spiracle) และท่อลม (trachea) ส่งอากาศถึงเซลล์โดยตรง"]
+[0,"โพรงจมูกช่วยปรับอากาศก่อนเข้าสู่ปอดอย่างไร",["กรอง อุ่น และเพิ่มความชื้น","สร้างออกซิเจน","แลกเปลี่ยนแก๊ส","เก็บคาร์บอนไดออกไซด์"],"ขนจมูกและเมือกช่วยกรอง ส่วนเยื่อบุโพรงจมูกช่วยทำให้อากาศอุ่นและชื้น"],
+[0,"กระดูกอ่อนรูปวงในหลอดลมมีหน้าที่ใด",["พยุงหลอดลมไม่ให้ยุบ","ช่วยสร้างเสียง","แลกเปลี่ยนแก๊ส","สูบฉีดเลือด"],"วงกระดูกอ่อนช่วยคงช่องหลอดลมให้เปิดสำหรับการไหลของอากาศ"],
+[0,"หลอดลมใหญ่แยกไปยังส่วนใดก่อนเข้าสู่ปอดแต่ละข้าง",["หลอดลมขั้วปอด","ถุงลม","กล่องเสียง","โพรงจมูก"],"หลอดลมคอแยกเป็นหลอดลมขั้วปอดซ้ายและขวา"],
+[0,"ซิเลียในทางเดินหายใจพัดเมือกไปทางใด",["ขึ้นสู่คอหอยเพื่อไอหรือกลืน","ลงสู่ถุงลม","เข้าสู่หลอดเลือด","ไปยังกะบังลม"],"ขนกวัดพัดเมือกและสิ่งแปลกปลอมขึ้นสู่คอหอย"],
+[0,"หลอดลมฝอยต่างจากหลอดลมใหญ่อย่างไร",["มีขนาดเล็กและผนังไม่มีกระดูกอ่อนเป็นวง","เป็นที่สร้างเม็ดเลือดแดง","มีถุงลมอยู่ภายในทุกส่วน","ทำหน้าที่สูบฉีดอากาศด้วยกล้ามเนื้อ"],"หลอดลมฝอยเป็นแขนงขนาดเล็กและมีผนังที่ควบคุมเส้นผ่านศูนย์กลางด้วยกล้ามเนื้อเรียบ"],
+[0,"อากาศจากคอหอยผ่านโครงสร้างใดก่อนเข้าสู่หลอดลมคอ",["กล่องเสียง","ถุงลม","หลอดเลือดฝอย","กะบังลม"],"เส้นทางหลักคือคอหอย ผ่านกล่องเสียง แล้วเข้าสู่หลอดลมคอ"],
+[1,"สารลดแรงตึงผิวในถุงลมช่วยเรื่องใด",["ลดแรงตึงผิวและช่วยป้องกันถุงลมแฟบ","เพิ่มความหนาผนังถุงลม","เปลี่ยนออกซิเจนเป็นไนโตรเจน","ทำให้เลือดแข็งตัว"],"สาร surfactant ช่วยลดแรงตึงผิวของของเหลวที่บุถุงลม"],
+[1,"เหตุใดถุงลมจึงมีหลอดเลือดฝอยล้อมรอบจำนวนมาก",["ช่วยรับและส่งแก๊สระหว่างอากาศกับเลือด","ช่วยกรองปัสสาวะ","สร้างเมือก","ทำให้ปอดเคลื่อนที่"],"เครือข่ายหลอดเลือดฝอยเพิ่มโอกาสให้ O₂ และ CO₂ แพร่ระหว่างเลือดกับถุงลม"],
+[1,"ออกซิเจนแพร่จากถุงลมเข้าสู่เลือดเพราะเหตุใด",["ความดันย่อยของ O₂ ในถุงลมสูงกว่าเลือดที่ไหลมา","เลือดมี O₂ สูงกว่า","ถุงลมใช้พลังงานปั๊ม O₂","ฮีโมโกลบินดึงอากาศโดยตรง"],"O₂ แพร่ตามความต่างของความดันย่อยจากถุงลมเข้าสู่เลือด"],
+[1,"ถ้าผนังถุงลมหนาขึ้น การแลกเปลี่ยนแก๊สจะเป็นอย่างไร",["ช้าลงเพราะระยะทางแพร่เพิ่มขึ้น","เร็วขึ้นเสมอ","ไม่เปลี่ยน","หยุดการไหลเวียนเลือด"],"ผนังที่หนาขึ้นทำให้แก๊สต้องแพร่ไกลขึ้นจึงแลกเปลี่ยนได้ช้าลง"],
+[1,"ถุงลมจำนวนมากช่วยการหายใจอย่างไร",["เพิ่มพื้นที่ผิวรวมสำหรับการแพร่แก๊ส","ลดเลือดที่ไปปอด","ทำให้อากาศหนักขึ้น","เก็บออกซิเจนไว้ได้นานหลายวัน"],"ถุงลมจำนวนมากให้พื้นที่ผิวรวมขนาดใหญ่สำหรับแลกเปลี่ยนแก๊ส"],
+[1,"คาร์บอนไดออกไซด์แพร่จากเลือดเข้าสู่ถุงลมเมื่อใด",["ความดันย่อยของ CO₂ ในเลือดสูงกว่าในถุงลม","ความดันย่อยของ CO₂ ในถุงลมสูงกว่า","ไม่มีเลือดไหลผ่าน","มีออกซิเจนในถุงลมเป็นศูนย์"],"CO₂ แพร่ตามความต่างของความดันย่อยจากเลือดเข้าสู่อากาศในถุงลม"],
+[2,"กล้ามเนื้อระหว่างซี่โครงชั้นนอกหดตัวขณะใด",["หายใจเข้า ช่วยยกซี่โครง","หายใจออกตามปกติเท่านั้น","ไอเท่านั้น","กลืนอาหาร"],"การหดตัวของกล้ามเนื้อระหว่างซี่โครงชั้นนอกช่วยยกซี่โครงและขยายช่องอก"],
+[2,"การหายใจออกตามปกติส่วนใหญ่เป็นกระบวนการแบบใด",["เกิดจากการคลายตัวและแรงยืดหยุ่นของปอด","ต้องหดกะบังลมแรงทุกครั้ง","ใช้กล้ามเนื้อแขน","เกิดจากการบีบหัวใจ"],"ขณะหายใจออกปกติ กะบังลมและกล้ามเนื้อคลายตัว ปอดคืนรูปและดันอากาศออก"],
+[2,"เมื่อปริมาตรช่องอกเพิ่มขึ้น ความดันในปอดเปลี่ยนอย่างไร",["ลดลงต่ำกว่าความดันบรรยากาศ","เพิ่มขึ้นสูงกว่าบรรยากาศ","ไม่เปลี่ยนเลย","กลายเป็นศูนย์"],"การเพิ่มปริมาตรทำให้ความดันในปอดลดลง อากาศจึงไหลเข้า"],
+[2,"ขณะหายใจเข้าซี่โครงเคลื่อนที่อย่างไร",["ยกขึ้นและกางออก","ลดลงและหุบเข้า","ไม่เคลื่อนที่เลย","หมุนลงไปด้านหลัง"],"กล้ามเนื้อระหว่างซี่โครงชั้นนอกช่วยยกซี่โครงขึ้นและกางออก"],
+[2,"กะบังลมขณะหายใจเข้ามีรูปร่างเปลี่ยนอย่างไร",["หดตัวและแบนลง","คลายตัวและโก่งสูงขึ้น","หดตัวและโก่งสูงขึ้น","ไม่เปลี่ยนรูปร่าง"],"กะบังลมหดตัวเลื่อนต่ำลง ทำให้ช่องอกมีปริมาตรมากขึ้น"],
+[2,"เหตุใดปอดจึงขยายตามการขยายของช่องอก",["เยื่อหุ้มปอดและแรงดันระหว่างเยื่อช่วยให้ปอดเคลื่อนตามผนังอก","หลอดลมยึดปอดกับกระดูกโดยตรง","เลือดดันปอดให้ใหญ่ขึ้น","ถุงลมยึดติดกับกะบังลม"],"เยื่อหุ้มปอดสองชั้นกับของเหลวระหว่างชั้นช่วยให้ปอดเลื่อนไปตามผนังทรวงอก"],
+[2,"การหายใจออกแรง ๆ ใช้กล้ามเนื้อใดช่วยมากขึ้น",["กล้ามเนื้อระหว่างซี่โครงชั้นในและกล้ามเนื้อหน้าท้อง","กล้ามเนื้อรอบดวงตา","กล้ามเนื้อหัวใจ","กล้ามเนื้อคอเท่านั้น"],"การไอหรือเป่าลมแรงใช้กล้ามเนื้อช่วยหายใจออกเพื่อเพิ่มแรงดันในช่องอก"],
+[2,"อากาศไหลเข้าปอดเมื่อใด",["ความดันในปอดต่ำกว่าความดันบรรยากาศ","ความดันในปอดสูงกว่าบรรยากาศ","ความดันเท่ากันแต่ปอดหดตัว","เลือดหยุดไหล"],"อากาศเคลื่อนจากบริเวณความดันสูงไปต่ำ จึงไหลเข้าสู่ปอดเมื่อความดันในปอดต่ำกว่า"],
+[3,"ออกซิเจนจับกับส่วนใดของฮีโมโกลบิน",["ธาตุเหล็กในหมู่ฮีม","หมู่ฟอสเฟต","เกล็ดเลือด","น้ำตาลในพลาสมา"],"ออกซิเจนจับกับธาตุเหล็กในหมู่ฮีมของฮีโมโกลบิน"],
+[3,"เมื่อ CO₂ ในเนื้อเยื่อสูงและ pH ลดลง ฮีโมโกลบินมักทำอย่างไร",["ปล่อย O₂ ให้เนื้อเยื่อได้ง่ายขึ้น","จับ O₂ แน่นขึ้นเสมอ","เปลี่ยนเป็นเกล็ดเลือด","หยุดจับแก๊สทุกชนิด"],"สภาวะ CO₂ สูงและ pH ต่ำช่วยให้ฮีโมโกลบินปล่อยออกซิเจนแก่เนื้อเยื่อได้มากขึ้น"],
+[3,"เอนไซม์คาร์บอนิกแอนไฮเดรสในเม็ดเลือดแดงช่วยอะไร",["เร่งการเปลี่ยน CO₂ กับน้ำเป็นไบคาร์บอเนต","จับออกซิเจนแทนฮีโมโกลบิน","สร้างถุงลม","ทำลายเม็ดเลือดขาว"],"เอนไซม์นี้เร่งปฏิกิริยาที่ทำให้ CO₂ ส่วนใหญ่ถูกขนส่งในรูปไบคาร์บอเนต"],
+[3,"คาร์บอนมอนอกไซด์เป็นอันตรายต่อการขนส่ง O₂ เพราะอะไร",["จับกับฮีโมโกลบินได้แน่นและแย่งตำแหน่ง O₂","เปลี่ยน O₂ เป็นน้ำทันที","ทำให้ถุงลมเพิ่มจำนวน","ทำให้เลือดขนส่ง O₂ มากขึ้น"],"CO จับฮีโมโกลบินได้แน่นมาก จึงลดตำแหน่งที่พร้อมขนส่ง O₂"],
+[3,"ออกซิเจนเพียงส่วนน้อยในเลือดถูกขนส่งในรูปใด",["ละลายในพลาสมา","อยู่ในเกล็ดเลือด","เป็นไบคาร์บอเนต","จับกับเม็ดเลือดขาว"],"O₂ ส่วนใหญ่จับฮีโมโกลบิน มีเพียงส่วนน้อยที่ละลายในพลาสมา"],
+[3,"ที่ปอด ไบคาร์บอเนตช่วยให้ CO₂ กลับมาเป็นแก๊สเพื่อทำอะไร",["แพร่เข้าสู่ถุงลมและถูกหายใจออก","จับกับฮีโมโกลบินถาวร","เปลี่ยนเป็นออกซิเจน","เข้าสู่กระดูก"],"ในปอดไบคาร์บอเนตเปลี่ยนกลับเป็น CO₂ แล้วแพร่เข้าสู่ถุงลม"],
+[3,"เมื่อเลือดไหลผ่านเนื้อเยื่อที่ใช้ O₂ มาก ความดันย่อย O₂ ในเนื้อเยื่อเป็นอย่างไร",["ต่ำกว่าเลือด จึงเอื้อต่อการแพร่ O₂ ออก","สูงกว่าเลือดเสมอ","เท่ากับบรรยากาศ","ไม่มีผลต่อการแพร่"],"เซลล์ใช้ O₂ ทำให้ความดันย่อยต่ำ O₂ จึงแพร่ออกจากเลือดเข้าสู่เนื้อเยื่อ"],
+[3,"ฮีโมโกลบินหนึ่งโมเลกุลจับออกซิเจนได้สูงสุดกี่โมเลกุล",["4","1","2","8"],"ฮีโมโกลบินมีหมู่ฮีม 4 หมู่ แต่ละหมู่จับ O₂ ได้หนึ่งโมเลกุล"],
+[4,"เหงือกปลารับออกซิเจนจากน้ำด้วยลักษณะใด",["น้ำไหลผ่านแผ่นเหงือกและแก๊สแพร่เข้าสู่เลือด","ปลาใช้ปอดแบบถุงลมเท่านั้น","ออกซิเจนเข้าทางผิวแห้ง","ปลาใช้ท่อลมถึงเซลล์"],"แผ่นเหงือกมีพื้นที่ผิวมากและรับ O₂ ที่ละลายในน้ำ"],
+[4,"การไหลสวนทางระหว่างน้ำกับเลือดที่เหงือกปลามีประโยชน์อย่างไร",["คงความต่างของ O₂ ให้แพร่เข้าสู่เลือดได้ตลอดแนวเหงือก","ทำให้น้ำหยุดไหล","ป้องกันเลือดไหลผ่านเหงือก","เปลี่ยน CO₂ เป็นอาหาร"],"การไหลสวนทางช่วยรักษาความต่างของความเข้มข้น O₂ ตลอดผิวแลกเปลี่ยน"],
+[4,"นกแลกเปลี่ยนแก๊สหลักที่โครงสร้างใด",["ปอดบริเวณพาราบรอนคัส","ถุงลมของนก","กระเพาะอาหาร","หลอดลมคอ"],"นกแลกเปลี่ยนแก๊สที่ปอด ส่วนถุงลมช่วยให้อากาศไหลผ่านปอด"],
+[4,"ถุงลมของนกมีหน้าที่หลักใด",["ช่วยเก็บและขับเคลื่อนอากาศผ่านปอด","เป็นตำแหน่งแลกเปลี่ยนแก๊สหลัก","สร้างฮีโมโกลบิน","กรองของเสียจากเลือด"],"ถุงลมทำหน้าที่คล้ายเครื่องสูบอากาศ ไม่ใช่บริเวณแลกเปลี่ยนแก๊สหลัก"],
+[4,"แมลงนำอากาศไปถึงเนื้อเยื่อผ่านระบบใด",["ท่อลมและท่อลมฝอย","หลอดเลือดแดงใหญ่","เหงือก","ถุงลมแบบนก"],"อากาศเข้าทางรูหายใจแล้วผ่านท่อลมและท่อลมฝอยไปใกล้เซลล์"],
+[4,"กบแลกเปลี่ยนแก๊สได้ทางใด",["ปอดและผิวหนังที่ชุ่มชื้น","เหงือกตลอดชีวิตเท่านั้น","ท่อลมแบบแมลง","ถุงลมแบบนก"],"กบโตเต็มวัยใช้ปอดและแลกเปลี่ยนแก๊สผ่านผิวหนังที่ชุ่มชื้นได้"],
+[4,"ไส้เดือนดินแลกเปลี่ยนแก๊สผ่านทางใด",["ผิวหนังที่ชุ่มชื้น","ปอดเป็นถุง","เหงือก","รูหายใจต่อกับท่อลม"],"ออกซิเจนแพร่ผ่านผิวหนังที่ชุ่มชื้นเข้าสู่หลอดเลือดของไส้เดือน"],
+[4,"สัตว์เลี้ยงลูกด้วยนมส่วนใหญ่ใช้โครงสร้างใดช่วยเปลี่ยนปริมาตรช่องอก",["กะบังลม","ถุงลมแบบนก","เหงือก","ท่อลมฝอย"],"กะบังลมเป็นกล้ามเนื้อสำคัญที่ช่วยขยายและลดปริมาตรช่องอก"],
+[4,"เหตุใดแมลงจึงไม่ต้องใช้เลือดขนส่งออกซิเจนไปยังเซลล์เป็นหลัก",["ท่อลมนำอากาศเข้าใกล้เซลล์โดยตรง","เลือดแมลงมีฮีโมโกลบินมาก","แมลงไม่ต้องใช้ออกซิเจน","ออกซิเจนเดินทางในกระดูก"],"ระบบท่อลมส่งอากาศใกล้เนื้อเยื่อโดยตรง จึงไม่พึ่งเลือดขนส่ง O₂ แบบสัตว์เลี้ยงลูกด้วยนม"],
+[0,"กระดูกอ่อนรูปตัว C รอบหลอดลมมีหน้าที่สำคัญอย่างไร",["ช่วยค้ำยันให้หลอดลมเปิด ไม่ยุบตัว","ทำให้เกิดเสียงพูด","แลกเปลี่ยนแก๊สกับเลือด","สูบอากาศเข้าปอด"],"กระดูกอ่อนรูปตัว C ช่วยค้ำยันหลอดลมให้เปิดอยู่ตลอดเวลา"],
+[0,"ซิเลียและเมือกที่บุหลอดลมช่วยป้องกันร่างกายอย่างไร",["ดักจับสิ่งแปลกปลอมและพัดเมือกออกจากทางเดินหายใจ","สร้างออกซิเจนให้เลือด","แลกเปลี่ยนแก๊สกับเส้นเลือดฝอย","ทำให้อากาศเย็นลง"],"เมือกดักจับฝุ่นและสิ่งแปลกปลอม ส่วนซิเลียช่วยพัดเมือกออกไป"],
+[0,"บริเวณใดของทางเดินหายใจเป็นตำแหน่งหลักที่เกิดการแลกเปลี่ยนแก๊ส",["ถุงลมและทางเดินหายใจส่วนหายใจ (respiratory zone)","โพรงจมูก","คอหอย","หลอดลมคอส่วนต้น"],"Respiratory zone มีถุงลมซึ่งเป็นบริเวณแลกเปลี่ยนแก๊ส ส่วน conducting zone เป็นทางผ่านและช่วยปรับอากาศ"],
+[1,"ถุงลมปอดมีเส้นเลือดฝอยล้อมรอบเพื่ออะไร",["แลกเปลี่ยน O₂ และ CO₂ ระหว่างอากาศกับเลือด","สร้างเมือกดักฝุ่น","ทำให้ปอดเคลื่อนที่","เก็บเลือดไว้สำรอง"],"เส้นเลือดฝอยรับเลือดมาแลกเปลี่ยนแก๊สกับอากาศในถุงลม"],
+[1,"แก๊สแพร่ผ่านผนังถุงลมและเส้นเลือดฝอยตามหลักใด",["แพร่จากบริเวณที่มีความดันย่อยสูงไปต่ำ","เคลื่อนจากความดันต่ำไปสูงเสมอ","ต้องใช้พลังงานจาก ATP ทุกครั้ง","เคลื่อนที่ตามการเต้นของหัวใจเท่านั้น"],"แก๊สแพร่ตามความต่างของความดันย่อยจากบริเวณสูงไปต่ำ"],
+[1,"ถุงลมปอดของคนมีจำนวนโดยประมาณเท่าใดตามเอกสาร",["ประมาณ 300 ล้านถุง","ประมาณ 300 ถุง","ประมาณ 3,000 ถุง","ประมาณ 3 ล้านถุง"],"เอกสารระบุว่าปอดคนมีถุงลมประมาณ 300 ล้านถุง ช่วยเพิ่มพื้นที่ผิวแลกเปลี่ยนแก๊ส"],
+[2,"ขณะหายใจเข้า ซี่โครงและช่องอกเปลี่ยนแปลงอย่างไร",["ซี่โครงยกขึ้นและกางออก ช่องอกขยาย","ซี่โครงลดลงและช่องอกแคบลง","ซี่โครงไม่เคลื่อนที่ ช่องอกหดลง","ซี่โครงกางออกแต่ปริมาตรช่องอกลด"],"ขณะหายใจเข้า กล้ามเนื้อระหว่างซี่โครงช่วยยกซี่โครงขึ้นและกางออก ทำให้ช่องอกขยาย"],
+[2,"ขณะหายใจออกตามปกติ กะบังลมเป็นอย่างไร",["คลายตัวและโค้งสูงขึ้น","หดตัวและแบนต่ำลง","หดตัวและเลื่อนลง","ไม่เปลี่ยนตำแหน่ง"],"เมื่อหายใจออก กะบังลมคลายตัวและโค้งสูงขึ้น ทำให้ช่องอกมีปริมาตรลดลง"],
+[2,"ขณะหายใจเข้า ความดันในปอดเปลี่ยนอย่างไรจนอากาศไหลเข้า",["ลดต่ำกว่าความดันภายนอก","สูงกว่าความดันภายนอก","เท่ากับภายนอกตลอดเวลา","ไม่มีการเปลี่ยนแปลง"],"เมื่อช่องอกขยาย ความดันในปอดลดลงต่ำกว่าภายนอก อากาศจึงไหลเข้าปอด"],
+[3,"ที่ถุงลมปอด ออกซิเจนแพร่ไปทางใด",["จากอากาศในถุงลมเข้าสู่เลือดฝอย","จากเลือดฝอยเข้าสู่ถุงลม","จากถุงลมออกสู่หลอดอาหาร","จากเลือดเข้าสู่หลอดลมใหญ่"],"ความดันย่อยของ O₂ ในถุงลมสูงกว่าเลือดที่ไหลเข้ามา จึงแพร่เข้าสู่เลือด"],
+[3,"คาร์บอนไดออกไซด์ส่วนใหญ่ในเลือดอยู่ในรูปใด",["ไบคาร์บอเนตไอออนในพลาสมา","ออกซิเจนที่จับฮีโมโกลบิน","แก๊สอิสระทั้งหมดในเม็ดเลือดแดง","จับกับเกล็ดเลือด"],"CO₂ ส่วนใหญ่ถูกเปลี่ยนเป็นไบคาร์บอเนตและลำเลียงในพลาสมา"],
+[3,"เมื่อเลือดไปถึงเนื้อเยื่อ ออกซิเจนแพร่จากเลือดไปที่ใด",["เข้าสู่เซลล์และเนื้อเยื่อ","กลับเข้าสู่ถุงลมทันที","เข้าสู่เกล็ดเลือด","ออกจากร่างกายทางผิวหนังทั้งหมด"],"ความดันย่อย O₂ ในเลือดสูงกว่าเนื้อเยื่อ จึงแพร่เข้าสู่เซลล์"],
+[4,"แมลงรับอากาศเข้าสู่ระบบท่อลมผ่านช่องเปิดใด",["รูหายใจ (spiracle)","ถุงลมปอด","เหงือก","ผิวหนังที่ชุ่มชื้น"],"อากาศผ่านรูหายใจหรือ spiracle เข้าสู่ท่อลมของแมลง"],
+[4,"อากาศเดินทางในระบบท่อลมของแมลงตามลำดับใด",["รูหายใจ → ท่อลม → ท่อลมฝอย → เซลล์","รูหายใจ → เลือด → หัวใจ → เซลล์","เหงือก → ปอด → เซลล์","ผิวหนัง → ถุงลม → เซลล์"],"ระบบท่อลมต่อจากรูหายใจไปยังท่อลมฝอยและส่งอากาศใกล้เซลล์โดยตรง"],
+[4,"กบแลกเปลี่ยนแก๊สได้ทางใดบ้าง",["ปอดและผิวหนังที่ชุ่มชื้น","เหงือกเท่านั้นตลอดชีวิต","ท่อลมแบบแมลงเท่านั้น","ถุงลมแบบนก"],"กบโตเต็มวัยใช้ปอดและผิวหนังที่ชุ่มชื้นช่วยแลกเปลี่ยนแก๊ส"],
+[4,"ถุงลมของนกมีบทบาทสำคัญอย่างไร",["สำรองและช่วยให้อากาศไหลผ่านปอด แต่ไม่ใช่จุดแลกเปลี่ยนแก๊สหลัก","แลกเปลี่ยนแก๊สแทนปอดทั้งหมด","สร้างเม็ดเลือดแดง","กรองฝุ่นด้วยซิเลีย"],"นกแลกเปลี่ยนแก๊สที่ปอด ส่วนถุงลมช่วยสำรองและเคลื่อนอากาศผ่านปอด"],
+[4,"เหตุใดนกจึงมีอากาศไหลผ่านปอดได้ต่อเนื่อง",["ถุงลมและทิศทางการไหลของอากาศทำให้อากาศผ่านปอดในช่วงหายใจเข้าและออก","นกมีกะบังลมเหมือนคน","ถุงลมทำหน้าที่แลกเปลี่ยนแก๊สทั้งหมด","นกไม่ต้องหายใจออก"],"ระบบถุงลมของนกทำให้อากาศไหลผ่านปอดต่อเนื่องทั้งช่วงหายใจเข้าและออก"],
+];
+var S=null,D={name:"",coins:0,best:0,totalDistance:0,totalPipes:0,answers:0,correct:0,levels:[],inventory:{heart:0,shield:0,wing:0},lastResult:null},selectedStage=0,stageInfo=["ทางเดินอากาศ","ถุงลมและการแลกเปลี่ยนแก๊ส","กลไกการหายใจ","การขนส่งแก๊ส","ระบบหายใจของสัตว์"],bgAsset=new Image(),raf=0,lastTime=0,paused=false,pipes=[],gifts=[],birdX=0,worldOffset=0,musicOn=true,aCtx=null,musicTimer=null,answerTimer=0;
+function $(i){return document.getElementById(i)}function sh(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}bgAsset.src="arcade_background_long.png";
+function showScreen(id){["home","game","mapScreen","shopScreen","nestScreen","shareScreen","results"].forEach(function(x){$(x).classList.toggle("hidden",x!==id)});document.querySelectorAll(".bottom-nav button").forEach(function(b){b.classList.toggle("active",b.dataset.screen===id||(id==="results"&&b.dataset.screen==="nestScreen"))});if(id==="mapScreen")renderMap();if(id==="shopScreen")renderShop();if(id==="nestScreen")renderStats();if(id==="shareScreen")renderShare()}
+function save(){try{localStorage.setItem("puipuiFlightSave",JSON.stringify(D))}catch(e){}}
+function load(){try{var x=JSON.parse(localStorage.getItem("puipuiFlightSave")||"null");if(x)D=Object.assign(D,x)}catch(e){}D.inventory=D.inventory||{heart:0,shield:0,wing:0};D.levels=D.levels||[]}
+function audio(){if(!aCtx)aCtx=new(window.AudioContext||window.webkitAudioContext)();if(aCtx.state==="suspended")aCtx.resume()}
+function tone(f,d,wave,vol,delay){if(!musicOn)return;var c=aCtx||audio(),o=c.createOscillator(),g=c.createGain();o.type=wave||"sine";o.frequency.value=f;g.gain.setValueAtTime(.0001,c.currentTime+(delay||0));g.gain.exponentialRampToValueAtTime(vol||.035,c.currentTime+(delay||0)+.04);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+(delay||0)+d);o.connect(g);g.connect(c.destination);o.start(c.currentTime+(delay||0));o.stop(c.currentTime+(delay||0)+d+.02)}
+function sfx(k){if(!musicOn)return;if(k==="correct"){tone(660,.14,"square",.05);tone(880,.16,"square",.04,.1)}else if(k==="wrong"){tone(220,.2,"triangle",.05)}else if(k==="flap"){tone(520,.08,"square",.028)}else if(k==="hit"){tone(130,.26,"sawtooth",.06)}else if(k==="gift"){[660,880,1100].forEach(function(f,i){tone(f,.15,"square",.04,i*.09)})}}
+function startMusic(){if(!musicOn||musicTimer)return;var notes=[392,494,587,494,440,523,659,523],i=0;musicTimer=setInterval(function(){if(musicOn)tone(notes[i++%notes.length],.32,"square",.01)},420)}
+function renderHome(){$("playerName").value=D.name||"";var sel=$("homeStage");sel.innerHTML=stageInfo.map(function(n,i){return '<option value="'+i+'">ด่าน '+(i+1)+': '+n+'</option>'}).join("");sel.value=selectedStage}
+function renderMap(){$("stageCards").innerHTML=stageInfo.map(function(n,i){var cleared=D.levels.indexOf(i)>=0;return '<div class="stage-card"><div><b>ด่าน '+(i+1)+': '+n+'</b><small>'+(cleared?"ผ่านแล้ว":"ยังไม่ผ่าน")+'</small></div><button data-stage="'+i+'">เลือก</button></div>'}).join("");$("stageCards").querySelectorAll("button").forEach(function(b){b.onclick=function(){selectedStage=+b.dataset.stage;renderHome();showScreen("home")}})}
+function renderShop(){$("walletShop").textContent=D.coins;var items=[{k:"heart",n:"หัวใจสำรอง",d:"เริ่มด่านด้วยหัวใจเพิ่ม 1 ดวง",c:4,e:"💖"},{k:"shield",n:"โล่กันท่อ",d:"ป้องกันการชน 1 ครั้ง",c:5,e:"🛡️"},{k:"wing",n:"ปีกเบา",d:"กระพือปีกได้แรงขึ้นในด่านถัดไป",c:3,e:"🪽"}];$("shopItems").innerHTML=items.map(function(x){return '<div class="shop-card"><div><b>'+x.e+' '+x.n+'</b><small>'+x.d+' · มี '+(D.inventory[x.k]||0)+'</small></div><button data-item="'+x.k+'" data-cost="'+x.c+'">ซื้อ '+x.c+' 🪙</button></div>'}).join("");$("shopItems").querySelectorAll("button").forEach(function(b){b.onclick=function(){var k=b.dataset.item,c=+b.dataset.cost;if(D.coins<c){alert("เหรียญไม่พอ ลองตอบคำถามให้ถูกเพื่อสะสมเหรียญนะ");return}D.coins-=c;D.inventory[k]=(D.inventory[k]||0)+1;save();renderShop()}})}
+function renderStats(){$("profileName").textContent=D.name||"นักบินนิรนาม";var stats=[["ระยะทางไกลสุด",D.best+" m"],["ระยะทางสะสม",D.totalDistance+" m"],["ผ่านท่อทั้งหมด",D.totalPipes],["ตอบถูก",D.correct+" / "+D.answers],["เหรียญ",D.coins],["ด่านที่ผ่าน",D.levels.length+" / 5"]];$("statsGrid").innerHTML=stats.map(function(x){return '<div class="stat"><b>'+x[1]+'</b>'+x[0]+'</div>'}).join("")}
+function renderShare(){$("shareStatus").textContent="";var r=D.lastResult;$("sharePreview").textContent=r?"นักบิน "+(D.name||"ไม่ระบุชื่อ")+" · ด่าน "+(r.stage+1)+" "+stageInfo[r.stage]+" · บิน "+r.distance+" เมตร · ผ่านท่อ "+r.pipes+" ท่อ · ตอบถูก "+r.correct+"/"+r.answers:"ยังไม่มีผลการบิน เริ่มเล่นเพื่อสร้างผลสรุปก่อนแชร์"}
+function startGame(){D.name=$("playerName").value.trim();if(!D.name){$("playerName").focus();$("playerName").placeholder="ใส่ชื่อก่อนเริ่มบินนะ";return}selectedStage=+$("homeStage").value;save();var sc=$("scene"),bonusHeart=Math.min(2,D.inventory.heart||0);D.inventory.heart-=bonusHeart;S={stage:selectedStage,score:0,distance:0,hearts:5+bonusHeart,correct:0,answers:0,used:{},vy:0,y:sc.clientHeight*.43,shield:(D.inventory.shield||0)>0,wing:(D.inventory.wing||0)>0,st:{},pipeCount:0};if(S.shield)D.inventory.shield--;if(S.wing)D.inventory.wing--;save();pipes=[];gifts=[];worldOffset=0;sc.style.backgroundPosition="0px 0";sc.querySelectorAll(".obstacle,.gift").forEach(function(x){x.remove()});birdX=Math.max(82,sc.clientWidth*.22);$("bird").style.left=birdX+"px";$("bird").style.top=S.y+"px";$("bird").style.transform="rotate(0deg)";$("runStage").textContent="ด่าน "+(S.stage+1);updateHud();$("qbox").classList.add("hidden");$("tapHint").classList.remove("hidden");$("gameTip").textContent=S.shield?"โล่พร้อมใช้ 1 ครั้ง · เก็บกล่อง 🎁 เพื่อตอบคำถาม":"หลบท่อให้ดี: 🎁 จะอยู่กลางช่องท่อแรก แล้วมีทุก 2 ท่อ บินชนกล่องเพื่อเปิดคำถาม!";paused=false;showScreen("game");spawnPipe(sc.clientWidth+90);lastTime=performance.now();raf=requestAnimationFrame(loop)}
+function updateHud(){$("distanceHud").textContent=Math.floor(S.distance)+" m";$("heartsHud").textContent="❤️".repeat(Math.max(0,S.hearts))+"🖤".repeat(Math.max(0,5-S.hearts));$("scoreHud").textContent="ท่อ "+S.score}
+function getFlightSpeed(){return Math.min(270,150+Math.floor(S.distance/35)*8)}function getPipeGap(){return Math.max(108,152-Math.floor(S.distance/40)*6)}function spawnPipe(x){var sc=$("scene"),gap=getPipeGap(),min=55,max=sc.clientHeight-34-gap-48,gapTop=min+Math.random()*Math.max(1,max-min),el=document.createElement("div");el.className="obstacle";el.style.left=x+"px";S.pipeCount++;var pipeType=["leaf","stone","wood","crystal"][(S.pipeCount-1)%4];var top=document.createElement("div");top.className="pipe top "+pipeType;top.style.height=gapTop+"px";var cap1=document.createElement("div");cap1.className="pipe-cap";top.appendChild(cap1);var bot=document.createElement("div");bot.className="pipe bottom "+pipeType;bot.style.top=(gapTop+gap)+"px";bot.style.height=(sc.clientHeight-34-gapTop-gap)+"px";var cap2=document.createElement("div");cap2.className="pipe-cap";bot.appendChild(cap2);el.appendChild(top);el.appendChild(bot);sc.appendChild(el);pipes.push({el:el,x:x,gap:gapTop,gapSize:gap,passed:false});if(S.pipeCount%2===1){var g=document.createElement("div");g.className="gift";g.textContent="🎁";var gy=gapTop+gap/2-17;g.style.top=gy+"px";g.style.left=(x+80)+"px";sc.appendChild(g);var giftEntry={el:g,x:x+80,y:gy,got:false};g.addEventListener("pointerdown",function(e){e.preventDefault();e.stopPropagation();if(!giftEntry.got&&!paused){giftEntry.got=true;g.remove();sfx("gift");askGift()}});gifts.push(giftEntry)}}
+function flap(){if(!S||paused||$("game").classList.contains("hidden"))return;S.vy=S.wing?-330:-285;$("tapHint").classList.add("hidden");sfx("flap")}
+function hitPipe(){if(performance.now()<(S.hitLock||0))return;S.hitLock=performance.now()+850;if(S.shield){S.shield=false;$("gameTip").textContent="🛡️ โล่ช่วยกันชนให้แล้ว!";sfx("gift")}else{S.hearts--;sfx("hit");if(S.hearts<=0){updateHud();finishRun();return}}S.vy=-180;S.y=$("scene").clientHeight*.42;$("bird").style.top=S.y+"px";updateHud()}
+function loop(now){if(!S||paused)return;var sc=$("scene"),dt=Math.min(.04,(now-lastTime)/1000||0),speed=getFlightSpeed();lastTime=now;S.vy+=600*dt;S.y+=S.vy*dt;S.distance+=speed*dt*.075;$("bird").style.top=S.y+"px";$("bird").style.transform="rotate("+Math.max(-25,Math.min(60,S.vy*.07))+"deg)";var bgWidth=sc.clientHeight*(bgAsset.naturalWidth/bgAsset.naturalHeight||3);worldOffset=(worldOffset+speed*.77*dt)%bgWidth;sc.style.backgroundPosition=(-worldOffset)+"px 0";pipes.forEach(function(p){p.x-=speed*dt;p.el.style.left=p.x+"px";if(birdX+38>p.x+2&&birdX<p.x+62&&(S.y<p.gap+2||S.y+32>p.gap+p.gapSize-2))hitPipe();if(!p.passed&&p.x+62<birdX){p.passed=true;S.score++;D.totalPipes++;sfx("correct");updateHud()}});gifts.forEach(function(g){g.x-=speed*dt;g.el.style.left=g.x+"px";if(birdX+50>g.x-24&&birdX<g.x+58&&S.y+42>g.y-50&&S.y<g.y+84&&!g.got){g.got=true;g.el.remove();sfx("gift");askGift()}});pipes=pipes.filter(function(p){if(p.x<-75){p.el.remove();return false}return true});gifts=gifts.filter(function(g){if(g.got||g.x<-50){g.el.remove();return false}return true});if(paused)return;if(S.y<0||S.y+34>sc.clientHeight-34)hitPipe();if(!S||S.hearts<=0)return;if(!pipes.length||pipes[pipes.length-1].x<sc.clientWidth-220)spawnPipe(sc.clientWidth+35);updateHud();raf=requestAnimationFrame(loop)}
+function askGift(){if(!S||paused)return;var pool=R.map(function(r,i){return i}).filter(function(i){return R[i]&&R[i][0]===S.stage});if(!pool.length)pool=R.map(function(r,i){return i});var options=pool.filter(function(i){return !S.used[i]});if(!options.length){S.used={};options=pool.slice()}var i=options[Math.floor(Math.random()*options.length)],r=R[i];if(!r){paused=false;$("gameTip").textContent="ไม่มีคำถามในชุดนี้ ลองเลือกด่านอื่น";return}S.cur=i;S.used[i]=1;S.currentTopic=r[0];var h='<span class="tag">🎁 '+stageInfo[r[0]]+'</span><p><b>เปิดกล่องของขวัญ! ตอบคำถามเพื่อรับเหรียญ</b></p><p>'+r[1]+'</p><div id="os">';sh(r[2].map(function(s,k){return{s:s,k:k}})).forEach(function(o){h+='<button class="opt" data-k="'+o.k+'">'+o.s+'</button>'});$("qbox").innerHTML=h+'</div><div id="fb"></div>';paused=true;$("qbox").classList.remove("hidden");document.querySelectorAll("#qbox .opt").forEach(function(btn){btn.onclick=function(){answer(+btn.dataset.k,btn)}});var first=$("qbox").querySelector(".opt");if(first)first.focus()}
+function resumeFlight(){if(!paused)return;if(answerTimer){clearTimeout(answerTimer);answerTimer=0}$("qbox").classList.add("hidden");paused=false;lastTime=performance.now();raf=requestAnimationFrame(loop)}
+function answer(k,b){var r=R[S.cur],ok=k===0;S.answers++;D.answers++;if(ok){S.correct++;D.correct++;D.coins++;sfx("correct")}else sfx("wrong");S.st[TOP[r[0]]]=S.st[TOP[r[0]]]||{right:0,wrong:0};S.st[TOP[r[0]]][ok?"right":"wrong"]++;save();document.querySelectorAll(".opt").forEach(function(x){x.disabled=true;if(+x.dataset.k===0)x.classList.add("ok");else if(x===b)x.classList.add("bad")});$("qbox").innerHTML='<span class="tag">'+TOP[r[0]]+'</span><p><b>'+(ok?"✅ ถูกต้อง! ได้ 1 เหรียญ":"❌ ยังไม่ถูก ลองอ่านคำอธิบาย")+'</b></p><div class="ex">'+r[3]+'</div><button id="resume" class="big-button">กลับไปบินต่อ</button>';$("resume").onclick=resumeFlight;answerTimer=setTimeout(resumeFlight,5000)}
+function finishRun(){if(!S)return;paused=true;cancelAnimationFrame(raf);var dist=Math.floor(S.distance),passed=S.score>=4;if(passed&&S.stage<4&&D.levels.indexOf(S.stage+1)<0)D.levels.push(S.stage+1);if(passed&&D.levels.indexOf(S.stage)<0)D.levels.push(S.stage);D.best=Math.max(D.best,dist);D.totalDistance+=dist;D.lastResult={stage:S.stage,distance:dist,pipes:S.score,correct:S.correct,answers:S.answers};save();$("resultPanel").innerHTML='<h1>จบเที่ยวบิน!</h1><div class="stats-grid"><div class="stat"><b>'+dist+' m</b>ระยะทาง</div><div class="stat"><b>'+S.score+'</b>ท่อที่ผ่าน</div><div class="stat"><b>'+S.hearts+'</b>หัวใจเหลือ</div><div class="stat"><b>'+S.correct+'/'+S.answers+'</b>ตอบถูก</div></div><p>เก็บเหรียญได้ '+D.coins+' 🪙</p><button id="retryButton" class="big-button">บินด่านนี้อีกครั้ง</button><button id="mapFromResult" class="big-button">ไปหน้า MAP</button>';showScreen("results");$("retryButton").onclick=startGame;$("mapFromResult").onclick=function(){showScreen("mapScreen")}}
+function shareResult(){var r=D.lastResult;if(!r){$("shareStatus").textContent="ยังไม่มีผลการบินให้แชร์";return}var msg="ผลการบินของ "+(D.name||"นักบิน")+"\nด่าน "+(r.stage+1)+": "+stageInfo[r.stage]+"\nบินได้ "+r.distance+" เมตร และผ่านท่อ "+r.pipes+" ท่อ\nตอบคำถามถูก "+r.correct+" จาก "+r.answers+" ข้อ";if(navigator.share){navigator.share({title:"ผลการบิน ปุยปุย",text:msg}).then(function(){$("shareStatus").textContent="เปิดเมนูแชร์แล้ว เลือกส่งให้คุณครูได้เลย"}).catch(function(){})}else if(navigator.clipboard){navigator.clipboard.writeText(msg).then(function(){$("shareStatus").textContent="คัดลอกผลแล้ว นำไปส่งให้คุณครูได้เลย"})}else{$("shareStatus").textContent=msg}}
+function goHome(){if(S&&!paused&&!$("game").classList.contains("hidden"))finishRun();renderHome();showScreen("home")}
+load();renderHome();renderMap();document.querySelectorAll(".bottom-nav button").forEach(function(b){b.onclick=function(){var id=b.dataset.screen;if(id==="home")goHome();else showScreen(id)}});$("playButton").onclick=function(){audio();startMusic();startGame()};$("gameHome").onclick=goHome;$("playerName").oninput=function(){D.name=this.value;save()};$("homeStage").onchange=function(){selectedStage=+this.value};$("scene").addEventListener("pointerdown",function(e){if(!e.target.closest("button"))flap()});window.addEventListener("keydown",function(e){if((e.code==="Space"||e.code==="ArrowUp")&&!$("game").classList.contains("hidden")){e.preventDefault();flap()}});$("shareButton").onclick=shareResult;$("soundBtn").onclick=function(){musicOn=!musicOn;this.textContent=musicOn?"🔊":"🔇";if(musicOn){audio();startMusic()}else if(musicTimer){clearInterval(musicTimer);musicTimer=null}};
+</script></script></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
